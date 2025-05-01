@@ -7,12 +7,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CenteredColumn(content: @Composable ColumnScope.() -> Unit) =
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        content = content
-    )
+fun CenteredColumn(
+    outerPadding: PaddingValues,
+    content: @Composable ColumnScope.() -> Unit
+) = Column(
+    modifier = Modifier
+        .fillMaxSize()
+        .padding(outerPadding)
+        .padding(24.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.Center,
+    content = content
+)

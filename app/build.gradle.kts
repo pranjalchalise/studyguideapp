@@ -102,6 +102,11 @@ dependencies {
 
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
 
+    // app/build.gradle.kts  – inside dependencies { }
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.compose.material:material-icons-extended:1.6.5") // icons
+
+
     // OCR - Tesseract Android (from michaldus)
     implementation("com.rmtheis:tess-two:9.1.0")  // Stable version for OCR functionality
 

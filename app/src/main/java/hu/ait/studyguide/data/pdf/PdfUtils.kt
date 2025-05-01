@@ -7,11 +7,12 @@ import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
 
 object PdfUtils {
-    /** Reads every page of the PDF and returns one big String. */
     fun extractText(ctx: Context, uri: Uri): String? = try {
-        PDFBoxResourceLoader.init(ctx)          // safe to call repeatedly
+        PDFBoxResourceLoader.init(ctx)
         ctx.contentResolver.openInputStream(uri)?.use { input ->
-            PDDocument.load(input).use { doc -> PDFTextStripper().getText(doc) }
+            PDDocument.load(input).use { doc ->
+                PDFTextStripper().getText(doc)
+            }
         }
     } catch (e: Exception) {
         e.printStackTrace(); null

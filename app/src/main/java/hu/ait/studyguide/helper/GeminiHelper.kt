@@ -5,7 +5,6 @@ import com.google.ai.client.generativeai.GenerativeModel
 object GeminiHelper {
     private const val MODEL = "gemini-1.5-flash"
 
-    /** mode = "NOTES" | "QUESTIONS" | "SUMMARY" */
     suspend fun ask(apiKey: String, mode: String, text: String): String {
         val prompt = when (mode) {
             "NOTES" -> """
@@ -18,8 +17,8 @@ object GeminiHelper {
                 ```$text```
             """.trimIndent()
 
-            else -> /* SUMMARY or fallback */ """
-                Summarize the following in ~150 words:
+            else -> /* SUMMARY (fallback) */ """
+                Summarize the following text in about 150 words:
                 ```$text```
             """.trimIndent()
         }

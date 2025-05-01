@@ -1,6 +1,7 @@
 package hu.ait.studyguide.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,27 +14,29 @@ fun StudyNavGraph(
     resultText: String,
     setMode: (String) -> Unit,
     onPickPdf: () -> Unit,
-    onAskGemini: () -> Unit
+    onAskGemini: () -> Unit,
+    padding: PaddingValues
 ) {
     NavHost(navController, Routes.Pick.route) {
 
         composable(Routes.Pick.route) {
-            PickPdfScreen(onPick = onPickPdf)
+            PickPdfScreen(onPickPdf, padding)
         }
 
         composable(Routes.Mode.route) {
             ModeSelectScreen(
-                onModeChosen = { label ->
-                    setMode(label)
+                onModeChosen = { m ->
+                    setMode(m)
                     navController.navigate(Routes.Result.route)
                     onAskGemini()
                 },
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                padding = padding
             )
         }
 
         composable(Routes.Result.route) {
-            ResultScreen(text = resultText) { navController.popBackStack() }
+            ResultScreen(resultText, onBack = { navController.popBackStack() }, padding)
         }
     }
 }
