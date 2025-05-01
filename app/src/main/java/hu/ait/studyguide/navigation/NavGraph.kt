@@ -1,42 +1,57 @@
 package hu.ait.studyguide.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import hu.ait.studyguide.ui.screen.*
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import hu.ait.studyguide.ui.screen.ModeSelectScreen
+import hu.ait.studyguide.ui.screen.PickPdfScreen
+import hu.ait.studyguide.ui.screen.ResultScreen
 
 @Composable
-fun StudyNavGraph(
-    navController: NavHostController,
-    pdfText: String,
-    resultText: String,
-    setMode: (String) -> Unit,
-    onPickPdf: () -> Unit,
-    onAskGemini: () -> Unit,
-    padding: PaddingValues
-) {
-    NavHost(navController, Routes.Pick.route) {
+fun StudyGuideNavHost() {
+    val nav = rememberNavController()
 
-        composable(Routes.Pick.route) {
-            PickPdfScreen(onPickPdf, padding)
+    NavHost(navController = nav, startDestination = Routes.PickPdf.route) {
+
+        composable(Routes.PickPdf.route) {
+            PickPdfScreen { pdfText ->
+                nav.navigate("${Routes.ModeSelect.route}/${pdfText.encode()}")
+            }
         }
 
-        composable(Routes.Mode.route) {
+        composable(
+            route = "${Routes.ModeSelect.route}/{pdf}",
+            arguments = listOf(navArgument("pdf") { type = NavType.StringType })
+        ) { back ->
+            val pdfText = back.arguments!!.getString("pdf")!!.decode()
             ModeSelectScreen(
-                onModeChosen = { m ->
-                    setMode(m)
-                    navController.navigate(Routes.Result.route)
-                    onAskGemini()
-                },
-                onBack = { navController.popBackStack() },
-                padding = padding
+                pdfText = pdfText,
+                onModeChosen = { mode ->
+                    nav.navigate("${Routes.Result.route}/${mode}/${pdfText.encode()}") {
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
-        composable(Routes.Result.route) {
-            ResultScreen(resultText, onBack = { navController.popBackStack() }, padding)
+        composable(
+            route = "${Routes.Result.route}/{mode}/{pdf}",
+            arguments = listOf(
+                navArgument("mode") { type = NavType.StringType },
+                navArgument("pdf")  { type = NavType.StringType }
+            )
+        ) { back ->
+            ResultScreen(
+                mode    = back.arguments!!.getString("mode")!!,
+                pdfText = back.arguments!!.getString("pdf")!!.decode(),
+                onBack  = { nav.popBackStack() }
+            )
         }
     }
 }
+
+private fun String.encode() = java.net.URLEncoder.encode(this, "UTF-8")
+private fun String.decode() = java.net.URLDecoder.decode(this, "UTF-8")

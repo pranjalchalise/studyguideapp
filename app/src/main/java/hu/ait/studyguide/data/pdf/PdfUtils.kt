@@ -5,16 +5,27 @@ import android.net.Uri
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
 
 object PdfUtils {
-    fun extractText(ctx: Context, uri: Uri): String? = try {
-        PDFBoxResourceLoader.init(ctx)
-        ctx.contentResolver.openInputStream(uri)?.use { input ->
-            PDDocument.load(input).use { doc ->
-                PDFTextStripper().getText(doc)
-            }
+
+    private val inited = AtomicBoolean(false)
+
+    private fun ensureInit(ctx: Context) {
+        if (inited.compareAndSet(false, true)) {
+            PDFBoxResourceLoader.init(ctx.applicationContext)
         }
-    } catch (e: Exception) {
-        e.printStackTrace(); null
     }
+
+    suspend fun extractTextFromPdf(ctx: Context, uri: Uri): String =
+        withContext(Dispatchers.IO) {
+            ensureInit(ctx)
+            ctx.contentResolver.openInputStream(uri)?.use { stream ->
+                PDDocument.load(stream).use { doc ->
+                    PDFTextStripper().getText(doc)
+                }
+            } ?: ""
+        }
 }

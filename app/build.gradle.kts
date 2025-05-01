@@ -107,10 +107,13 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.6.5") // icons
 
 
-    // OCR - Tesseract Android (from michaldus)
     implementation("com.rmtheis:tess-two:9.1.0")  // Stable version for OCR functionality
 
     implementation("androidx.navigation:navigation-compose:2.7.7")  // ← NEW
+
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+
 
 }
 
